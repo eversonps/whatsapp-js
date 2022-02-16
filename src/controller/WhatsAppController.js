@@ -1,4 +1,6 @@
-class WhatsAppController{
+import {Format} from "./../util/Format.js"
+import {CameraController} from "./CameraController.js"
+export class WhatsAppController{
     constructor(){
         console.log("OK")
         this._recordMicrophoneInterval
@@ -161,11 +163,14 @@ class WhatsAppController{
         this.el.btnAttachCamera.on("click", e=>{
             this.closeAllMainPanel()
             this.el.panelCamera.addClass("open")
+
+            this._camera = new CameraController(this.el.videoCamera)
         })
 
         this.el.btnClosePanelCamera.on("click", e=>{
             this.closeAllMainPanel()
             this.el.panelMessagesContainer.show()
+            this._camera.stop()
         })
 
         this.el.btnTakePicture.on("click", e=>{
@@ -214,11 +219,11 @@ class WhatsAppController{
             if(e.key === "Enter" && !e.ctrlKey){
                 e.preventDefault()
                 this.el.btnSend.click()
-                console.log("clicou")
             }
         })
 
         this.el.inputText.on("keyup", e=>{
+            console.log(this.el.inputText.innerHTML)
             if(this.el.inputText.innerHTML != "<br>"){      
                 this.el.inputPlaceholder.hide()
                 this.el.btnSendMicrophone.hide()
@@ -236,12 +241,10 @@ class WhatsAppController{
 
         this.el.btnEmojis.on("click", e=>{
             this.el.panelEmojis.toggleClass("open")
-            console.log(this.el.panelEmojis)
         })
 
         this.el.panelEmojis.querySelectorAll(".emojik").forEach(emoji=>{
             emoji.on("click", e=>{
-                console.log(emoji.dataset.unicode)
                 let img = this.el.imgEmojiDefault.cloneNode()
                 img.style.cssText = emoji.style.cssText
                 img.dataset.unicode = emoji.dataset.unicode
@@ -266,9 +269,6 @@ class WhatsAppController{
                 frag.appendChild(img)
                 range.insertNode(frag)
 
-                range.setStartAfter(frag)
-
-                this.el.inputText.appendChild(img)
                 this.el.inputText.dispatchEvent(new Event("keyup"))
             })
         })
