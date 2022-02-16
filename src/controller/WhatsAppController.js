@@ -57,6 +57,16 @@ class WhatsAppController{
             return this
         }
 
+        Element.prototype.toggleClass = function(name){
+            if(this.hasClass(name)){
+                this.classList.remove(name)
+            } else{
+                this.classList.add(name)
+            }
+
+            return this
+        }
+
         Element.prototype.hasClass = function(name){
             return this.classList.contains(name)
         }
@@ -198,6 +208,41 @@ class WhatsAppController{
 
         this.el.btnFinishMicrophone.on("click", e=>{
             this.closeRecordMicrophone()
+        })
+
+        this.el.inputText.on("keypress", e=>{
+            if(e.key === "Enter" && !e.ctrlKey){
+                e.preventDefault()
+                this.el.btnSend.click()
+                console.log("clicou")
+            }
+        })
+
+        this.el.inputText.on("keyup", e=>{
+            if(this.el.inputText.innerHTML != "<br>"){      
+                this.el.inputPlaceholder.hide()
+                this.el.btnSendMicrophone.hide()
+                this.el.btnSend.show()
+            }else{
+                this.el.inputPlaceholder.show()
+                this.el.btnSendMicrophone.show()
+                this.el.btnSend.hide()
+            }
+        })
+
+        this.el.btnSend.on("click", e=>{
+            console.log(this.el.inputText.innerHTML)
+        })
+
+        this.el.btnEmojis.on("click", e=>{
+            this.el.panelEmojis.toggleClass("open")
+            console.log(this.el.panelEmojis)
+        })
+
+        this.el.panelEmojis.querySelectorAll(".emojik").forEach(emoji=>{
+            emoji.on("click", e=>{
+                console.log(emoji.dataset.unicode)
+            })
         })
     }
 
