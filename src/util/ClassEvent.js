@@ -5,7 +5,6 @@ export class ClassEvent{
 
     on(eventName, fn){
         if(!this._events[eventName]) this._events[eventName] = new Array()
-
         this._events[eventName].push(fn)
     }
 
@@ -17,6 +16,7 @@ export class ClassEvent{
 
         if(this._events[eventName] instanceof Array){
             this._events[eventName].forEach(fn=> {
+                console.log(fn)
                 fn.apply(null, args)
             });
         }
