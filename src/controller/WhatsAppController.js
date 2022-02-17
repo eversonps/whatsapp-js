@@ -1,5 +1,7 @@
 import {Format} from "./../util/Format.js"
 import {CameraController} from "./CameraController.js"
+import { DocumentPreviewController } from "./DocumentPreviewController.js"
+
 export class WhatsAppController{
     constructor(){
         console.log("OK")
@@ -163,7 +165,7 @@ export class WhatsAppController{
         this.el.btnAttachCamera.on("click", e=>{
             this.closeAllMainPanel()
             this.el.panelCamera.addClass("open")
-            this.el.videoCamera.show()
+            this.openCamera()
             this._camera = new CameraController(this.el.videoCamera)
         })
 
@@ -188,16 +190,71 @@ export class WhatsAppController{
         })
 
         this.el.btnReshootPanelCamera.on("click", e=>{
-            this.el.pictureCamera.hide()
-            this.el.btnReshootPanelCamera.hide()
-            this.el.videoCamera.show()
-            this.el.containerTakePicture.show()
-            this.el.containerSendPicture.hide()
+            this.openCamera()
         })
 
         this.el.btnAttachDocument.on("click", e=>{
             this.closeAllMainPanel()
             this.el.panelDocumentPreview.addClass("open")
+            this.el.panelDocumentPreview.css({
+                "height": "500px"
+            })
+
+            this.el.inputDocument.click()
+        })
+
+        this.el.inputDocument.on("change", e=>{     
+            if(this.el.inputDocument.files.length){
+                let file = this.el.inputDocument.files[0]
+                console.log(file)
+                this.documentPreviewController = new DocumentPreviewController(file)
+
+                this.documentPreviewController.getPreviewData().then(data=>{
+                    console.log('a')
+                    this.el.imgPanelDocumentPreview.css({
+                        'height': 'calc(100% - 120px)',
+                        "margin-top": "50px"
+                        });
+                    this.el.imgPanelDocumentPreview.src = data.src
+                    this.el.infoPanelDocumentPreview.innerHTML = data.info
+
+                    if(data.type == "application/pdf"){
+                        this.el.imagePanelDocumentPreview.hide()
+                        this.el.filePanelDocumentPreview.show()
+                    }else{
+                        this.el.imagePanelDocumentPreview.show()
+                        this.el.filePanelDocumentPreview.hide()
+                    }  
+
+                    this.el.infoPanelDocumentPreview.show()
+                }).catch(e=>{
+                    console.error(e)
+                    switch (file.type) {
+                        case 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+                        case 'application/msword':
+                            this.el.iconPanelDocumentPreview.className.value = 'jcxhw icon-doc-doc';
+                            break;
+
+                        case 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
+                        case 'application/vnd.ms-excel':
+                            this.el.iconPanelDocumentPreview.className.value = 'jcxhw icon-doc-xls';
+                            break;
+
+                        case 'application/vnd.ms-powerpoint':
+                        case 'application/vnd.openxmlformats-officedocument.presentationml.presentation':
+                            this.el.iconPanelDocumentPreview.className.value = 'jcxhw icon-doc-ppt';
+                            break;
+
+                        default:
+                            this.el.iconPanelDocumentPreview.className.value = 'jcxhw icon-doc-generic';
+                            break
+                    }
+
+                    this.el.imagePanelDocumentPreview.hide()
+                    this.el.filePanelDocumentPreview.show()
+                    this.elInfoPanelDocumentPreview.innerHTML = file.name
+                })
+            }
         })
 
         this.el.btnSendDocument.on("click", e=>{
@@ -292,6 +349,14 @@ export class WhatsAppController{
         })
     }
 
+    openCamera(){
+        this.el.pictureCamera.hide()
+        this.el.btnReshootPanelCamera.hide()
+        this.el.videoCamera.show()
+        this.el.containerTakePicture.show()
+        this.el.containerSendPicture.hide()
+
+    }
     startMicrophoneTime(){
         let start = Date.now()
 
