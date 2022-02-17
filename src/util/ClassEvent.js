@@ -16,7 +16,6 @@ export class ClassEvent{
 
         if(this._events[eventName] instanceof Array){
             this._events[eventName].forEach(fn=> {
-                console.log(fn)
                 fn.apply(null, args)
             });
         }

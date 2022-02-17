@@ -45,8 +45,6 @@ export class MicrophoneController extends ClassEvent{
             })
 
             this._mediaRecorder.addEventListener("stop", e=>{
-
-                console.log("entrou")
                 let blob = new Blob(this._recordedChunks, {
                     type: this._mimeType
                 })
@@ -58,9 +56,6 @@ export class MicrophoneController extends ClassEvent{
                     type: this._mimeType,
                     lastModified: Date.now()
                 })
-
-                console.log(file)
-                
             })
 
             this._mediaRecorder.start()

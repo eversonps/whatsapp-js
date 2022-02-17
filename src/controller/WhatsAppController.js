@@ -2,16 +2,26 @@ import {Format} from "./../util/Format.js"
 import {CameraController} from "./CameraController.js"
 import { DocumentPreviewController } from "./DocumentPreviewController.js"
 import { MicrophoneController } from "./MicrophoneController.js"
+import { Firebase } from "./../util/firebase.js"
 
 export class WhatsAppController{
     constructor(){
-        console.log("OK")
+        this._firebase = new Firebase()
+        console.log(this._firebase)
         this._recordMicrophoneInterval
         this.el
+        this.initAuth()
         this.elementsPrototype()
         this.loadElements()
         this.initEvents()
-        
+    }
+
+    initAuth(){
+        this._firebase.initAuth().then((user, token)=>{
+            console.log(user, token)
+        }).catch(e=>{
+            console.error(e)
+        })
     }
 
     loadElements(){
@@ -282,7 +292,6 @@ export class WhatsAppController{
 
             this._microphoneController = new MicrophoneController()
             this._microphoneController.on("ready", musica=>{
-                console.log("ready events")
                 this._microphoneController.startRecorder()    
             })
 
