@@ -24,13 +24,13 @@ export class Firebase{
     }
 
     init(){
-        if(this.initialize == "false"){
+        if(!window.initializeFirebase){
             firebase.initializeApp(this._config);
             console.log(firebase)
             firebase.firestore().settings({
                 timestampsInSnapshots: true
             })
-            this.initialize = true
+            window.initializeFirebase = true
         }
     }
 
@@ -49,7 +49,7 @@ export class Firebase{
             firebase.auth().signInWithPopup(provider).then((result)=>{
                 let token = result.credential.accessToken
                 let user = result.user
-                s(user, token)
+                s({user, token})
             }).catch(e=>{
                 f(e)
             })
