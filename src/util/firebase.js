@@ -1,6 +1,6 @@
 export class Firebase{
     constructor(){
-        this.config = {
+        this._config = {
 
             apiKey: "AIzaSyB-ozC0bbhE5FrHul2YPB4dkJwtczkUkOY",
         
@@ -18,7 +18,7 @@ export class Firebase{
         
           };
         
-        
+        this.initialize = "false"
         this.init()
 
     }
@@ -26,8 +26,9 @@ export class Firebase{
     init(){
         if(this.initialize == "false"){
             firebase.initializeApp(this._config);
-            firebase.firestore().setting({
-                timestampsInSnapshot: true
+            console.log(firebase)
+            firebase.firestore().settings({
+                timestampsInSnapshots: true
             })
             this.initialize = true
         }
@@ -45,7 +46,7 @@ export class Firebase{
         return new Promise((s, f)=>{
             let provider = new firebase.auth.GoogleAuthProvider()
             console.log(firebase)
-            firebase.auth().Auth().signInWithPopup(provider).then((result)=>{
+            firebase.auth().signInWithPopup(provider).then((result)=>{
                 let token = result.credential.accessToken
                 let user = result.user
                 s(user, token)
