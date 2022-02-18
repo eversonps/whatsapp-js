@@ -17,8 +17,7 @@ export class Firebase{
             measurementId: "G-6HB4S0S334"
         
           };
-        
-        this.initialize = "false"
+
         this.init()
 
     }
