@@ -149,6 +149,7 @@ export class WhatsAppController{
 
         this.el.btnClosePanelEditProfile.on("click", e=>{
             this.el.panelEditProfile.removeClass("open")
+            this.el.btnClosePanelAddContact.click()
         })
 
         this.el.btnClosePanelAddContact.on("click", e=>{
@@ -167,13 +168,29 @@ export class WhatsAppController{
         })
 
         this.el.btnSavePanelEditProfile.on("click", e=>{
-            console.log(this.el.inputNamePanelEditProfile.innerHTML)
+            this.el.btnSavePanelEditProfile.disabled = true
+            this._user.name = this.el.inputNamePanelEditProfile.innerHTML
+            this._user.save().then(()=>{
+                this.el.btnSavePanelEditProfile.disabled = false
+            })
         })
 
-        this.el.formPanelAddContact.on("click", e=>{
+        this.el.formPanelAddContact.on("submit", e=>{
             e.preventDefault()
-            let form = this.el.formPanelAddContact.toJSON()
-            console.log(form)
+            let form = new FormData(this.el.formPanelAddContact)
+            
+            let contact = new User(form.get("email"))
+            console.log(contact)
+            console.log(contact)
+            contact.on("datachange", data=>{
+                if(data.name){
+                    console.log(data.name)
+                }else{
+                    console.error("não encontrou o contato")
+                }
+            })
+
+            this._user.addContact(contact)
         })
 
         this.el.contactsMessagesList.querySelectorAll(".contact-item").forEach(item=>{

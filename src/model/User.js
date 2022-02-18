@@ -10,14 +10,14 @@ export class User extends Model{
         }
     }
 
-    get name() {return this._data.name}
-    set name(value) {this._data.name = value}
+    get name() { return this._data.name; }
+    set name(value) { this._data.name = value; }
 
-    get email() {return this._data.email}
-    set email(value) {this._data.email = value}
+    get email() { return this._data.email; }
+    set email(value) { this._data.email = value; }
 
-    get photo() {return this._data.photo}
-    set photo(value) {this._data.photo = value}
+    get photo() { return this._data.photo; }
+    set photo(value) { this._data.photo = value; }
 
     getById(idEmail){
         return new Promise((s, f)=>{
@@ -29,9 +29,12 @@ export class User extends Model{
     }
 
     save(){
-        return User.findByEmail(this.email).set(
-            this.toJSON()
-        )
+        return User.findByEmail(this.email).set(this.toJSON())
+    }
+
+    addContact(contact){
+        console.log(contact.toJSON())
+        return User.getRef().doc(this.email).collection("contacts").doc(btoa(contact.email)).set(contact.toJSON())
     }
 
     static getRef(){
