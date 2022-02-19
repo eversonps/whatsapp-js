@@ -21,8 +21,8 @@ export class Format{
     static dateToTime(date, locale="pt-br"){
         console.log(date)
         return date.toLocaleTimeString(locale, {
-            hours: "2-digit",
-            minutes: "2-digit"
+            hour: "2-digit",
+            minute: "2-digit"
         })
     }
 
