@@ -52,7 +52,7 @@ export class Message extends Model{
 
     static sendAudio(chatId, from, file, metadata, photo){
         return Message.send(chatId, from, "audio", "").then(msgRef=>{
-            Message.upload(file, from).then(snapshot=>{
+            Upload.send(file, from).then(snapshot=>{
                 let downloadFile = snapshot.downloadURL
 
                 msgRef.set({
@@ -77,11 +77,11 @@ export class Message extends Model{
     static sendDocument(chatId, from, file, previewDocument, info){
         Message.send(chatId, from, "document", "").then(msgRef=>{
             return new Promise((s, f)=>{                
-                Message.upload(file, from).then(snapshot=>{
+                Upload.send(file, from).then(snapshot=>{
                     let downloadFile = snapshot.downloadURL
                     console.log(downloadFile)
                     if(previewDocument){
-                        Message.upload(previewDocument, from).then(snapshot2=>{
+                        Upload.send(previewDocument, from).then(snapshot2=>{
                             let downloadPreview = snapshot2.downloadURL
         
                             msgRef.set({
@@ -116,7 +116,7 @@ export class Message extends Model{
         return new Promise((s, f)=>{
             let uploadTask = Firebase.hd().ref(from).child(Date.now() + "_" + file.name).put(file)
             
-            Message.upload(file, from).then(snapshot=>{
+            Upload.send(file, from).then(snapshot=>{
                 Message.send(chatId, from, "image", snapshot.downloadURL).then(()=>{
                     s()
                 })

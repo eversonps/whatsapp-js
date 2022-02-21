@@ -12,7 +12,7 @@ import { Upload } from "../util/Upload.js"
 
 export class WhatsAppController{
     constructor(){
-       
+        this._active = true
         this._firebase = new Firebase()
         this.initAuth()
 
@@ -21,7 +21,43 @@ export class WhatsAppController{
         this.elementsPrototype()
         this.loadElements()
         this.initEvents()
+        this.checkNotifications()
         
+    }
+
+    checkNotifications(){
+        if(typeof Notification === "function"){
+            if(Notification.permission !== "granted"){
+                this.el.alertNotificationPermission.show()
+            }else{
+                this.el.alertNotificationPermission.hide()
+            }
+
+            this.el.alertNotificationPermission.on("click", e=>{
+                Notification.requestPermission(permission=>{
+                    if(permission == "granted"){
+                        this.el.alertNotificationPermission.hide()
+                        console.info("permitiu")
+                    }
+                })
+            })
+        }
+    }
+
+    notification(data){
+        if(Notification.permission === "granted" && !this._active){
+            let n = new Notification(this._contactAtive.name, {
+                icon: this._contactAtive.photo,
+                body: data.content
+            })
+
+            let sound = new Audio("./audio/alert.mp3")
+            sound.currentTime = 0
+            sound.play()
+            setTimeout(()=>{
+                if(n) n.close()
+            }, 3000)
+        }
     }
 
     initAuth(){
@@ -47,6 +83,7 @@ export class WhatsAppController{
             this._user.name = response.user.displayName
             this._user.email = response.user.email
             this._user.photo = response.user.photoURL
+            console.log(response.user.photoURL)
             
             this._user.save().then(()=>{
                 this.el.appContent.css({
@@ -212,6 +249,14 @@ export class WhatsAppController{
     }
 
     initEvents(){
+        window.addEventListener("focus", e=>{
+            this._active = true
+        })
+
+        window.addEventListener("blur", e=>{
+            this._active = false
+        })
+
         this.el.inputSearchContacts.on("keyup", e=>{
             if(this.el.inputSearchContacts.value.length > 0){
                 this.el.inputSearchContactsPlaceholder.hide()
@@ -603,6 +648,7 @@ export class WhatsAppController{
         })
 
         this.el.panelMessagesContainer.innerHTML = ""
+        this._messagesReceived = []
         Message.getRef(this._contactAtive.chatId).orderBy("timeStamp").onSnapshot(docs=>{
 
             let scrollTop = this.el.panelMessagesContainer.scrollTop
@@ -616,6 +662,11 @@ export class WhatsAppController{
                 message.fromJSON(data)
 
                 let me = (data.from === this._user.email)
+
+                if(!me && this._messagesReceived.filter(id =>{return (id === data.id)}).length === 0){
+                    this.notification(data)
+                    this._messagesReceived.push(data.id)
+                }
                 let view = message.getViewElement(me)
 
                 if(!this.el.panelMessagesContainer.querySelector("#_" + data.id)){
